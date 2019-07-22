@@ -21,21 +21,13 @@ app.get('/todos',(req,res) => {
 
 // GET /todos/:id
 app.get('/todos/:id',(req,res) => {
+
 // res.send(`Asking for todo with id of ${req.params.id}`);
    let todoid = parseInt(req.params.id,10);
 
- var matchedTodo = _.findWhere(todos,{id:todoid});
+ let matchedTodo = _.findWhere(todos,{id:todoid});
 
-
- matchedTodo ?  res.json(todos[todoid]) : res.status(404).send("Page not found");
-
-//    //iterate of todos array. find the match
-//     todos.forEach((item,index) =>{
-//        if(item.id == todoid)
-//          res.json(todos[index]);
-//     })
-
-//    res.status(404).send("Page not found");
+ matchedTodo ?  res.json(matchedTodo) : res.status(404).send("Page not found");
 })
 
 //POST todo
@@ -57,6 +49,21 @@ if(!_.isBoolean(body.completed) || !_.isString(body.description) || body.descrip
      res.json(body);  
 });
  
+// DELETE /todo/:id
+app.delete('/todos/:id',(req,res) => {
+    var todoId = parseInt(req.params.id,10);
+    let matched = _.findWhere(todos,{id:todoId});
+
+    if(!matched){
+        res.status(404).json({"error": "no todo found with that id"});
+    }
+        else{
+            todos = _.without(todos,matched);
+            res.json(matched);
+        }
+    
+});
+
 
 app.listen(PORT,()=>{
     console.log(`Express server is on port no. ${PORT}`);
