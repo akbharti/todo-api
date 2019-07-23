@@ -14,10 +14,20 @@ app.get('/',(req,res) => {
     res.send("Hola from Abhi side");
 });
 
-// GET /todos
-app.get('/todos',(req,res) => {
-        res.json(todos);   // we can send TEXT back & for
+// GET /todos?completed=true
+app.get('/todos', (req, res)=> {
+	var queryParams = req.query;
+	var filteredTodos = todos;
+
+    if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
+		filteredTodos = _.where(filteredTodos, {completed: true});
+	} else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
+		filteredTodos = _.where(filteredTodos, {completed: false});
+	}
+
+	res.json(filteredTodos);
 });
+
 
 // GET /todos/:id
 app.get('/todos/:id',(req,res) => {
@@ -68,16 +78,12 @@ app.delete('/todos/:id',(req,res) => {
 app.put('/todos/:id',(req,res)=>{
     let todoId = parseInt(req.params.id,10);
     let matchedTodo = _.findWhere(todos,{id:todoId});
-
     let body = _.pick(req.body,'description','completed');
-
     let valideAttribute = {};
 
-
-    if(!matchedTodo){
+    if(!matchedTodo)
         return res.status(404).send();
-    }
-
+    
     if(body.hasOwnProperty('completed') && _.isBoolean(body.completed)){
         valideAttribute.completed = body.completed;
     }else
