@@ -14,7 +14,7 @@ app.get('/',(req,res) => {
     res.send("Hola from Abhi side");
 });
 
-// GET /todos?completed=true
+// GET /todos?completed=flase&q=work
 app.get('/todos', (req, res)=> {
     var queryParams = req.query;
     console.log(queryParams);
@@ -30,13 +30,22 @@ app.get('/todos', (req, res)=> {
         console.log(filteredTodos);
 	}
 
-    if(queryParams.hasOwnProperty('q') && queryParams.q.length > 0){
-        filteredTodos = _.filter(filteredTodos,(todo) =>{
-            console.log('q');
+//q=work    
+  if(queryParams.hasOwnProperty('q') && queryParams.q.length > 0){
+      filteredTodos = _.filter(filteredTodos,(todo) =>{
+          return todo.description.indexOf(queryParams.q) > -1;
+      });
+  }
+
+
+
+    // if(queryParams.hasOwnProperty('q') && queryParams.q.length > 0){
+    //     filteredTodos = _.filter(filteredTodos,(todo) =>{
+    //         console.log('q');
             
-            return todo.description.indexOf(queryParams.q) > -1 
-        });
-    }
+    //         return todo.description.indexOf(queryParams.q) > -1 
+    //     });
+    // }
     
 	res.json(filteredTodos);
 });
@@ -54,8 +63,7 @@ app.get('/todos/:id',(req,res) => {
 })
 
 //POST todo
-
-app.post('/todos',(req,res)=>{
+app.post('/todos',(req,res)=>{ 
       console.log(req.body);
      let body = _.pick(req.body,'description','completed');
 
